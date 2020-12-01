@@ -2,13 +2,16 @@ import {
   Animation,
   Audio,
   CallDiscardReasonUnion,
+  ChatPhoto,
   Contact,
+  DiceStickersUnion,
   Document,
   EncryptedCredentials,
   EncryptedPassportElement,
   FormattedText,
   Game,
   Location,
+  MessageSenderUnion,
   OrderInfo,
   PassportElementTypeUnion,
   Photo,
@@ -62,6 +65,7 @@ export type MessageContentUnion = MessageText
   | MessageWebsiteConnected
   | MessagePassportDataSent
   | MessagePassportDataReceived
+  | MessageProximityAlertTriggered
   | MessageUnsupported
 
 /** A text message */
@@ -178,7 +182,7 @@ export interface MessageLocation {
   /** The location description */
   location: Location
   /**
-   * Time relative to the message sent date until which the location can be updated, in
+   * Time relative to the message send date, for which the location can be updated, in
    * seconds
    */
   livePeriod: number
@@ -187,6 +191,17 @@ export interface MessageLocation {
    * is not sent when this field changes
    */
   expiresIn: number
+  /**
+   * For live locations, a direction in which the location moves, in degrees; 1-360. If
+   * 0 the direction is unknown
+   */
+  heading: number
+  /**
+   * For live locations, a maximum distance to another chat member for proximity alerts,
+   * in meters (0-100000). 0 if the notification is disabled. Available only for the message
+   * sender
+   */
+  proximityAlertRadius: number
 }
 
 /** A message with information about a venue */
@@ -207,15 +222,15 @@ export interface MessageContact {
 export interface MessageDice {
   _: 'messageDice'
   /**
-   * The animated sticker with the initial dice animation; may be null if unknown. updateMessageContent
+   * The animated stickers with the initial dice animation; may be null if unknown. updateMessageContent
    * will be sent when the sticker became known
    */
-  initialStateSticker?: Sticker
+  initialState?: DiceStickersUnion
   /**
-   * The animated sticker with the final dice animation; may be null if unknown. updateMessageContent
+   * The animated stickers with the final dice animation; may be null if unknown. updateMessageContent
    * will be sent when the sticker became known
    */
-  finalStateSticker?: Sticker
+  finalState?: DiceStickersUnion
   /** Emoji on which the dice throw animation is based */
   emoji: string
   /** The dice value. If the value is 0, the dice don't have final state yet */
@@ -267,6 +282,8 @@ export interface MessageInvoice {
 /** A message with information about an ended call */
 export interface MessageCall {
   _: 'messageCall'
+  /** True, if the call was a video call */
+  isVideo: boolean
   /** Reason why the call was discarded */
   discardReason: CallDiscardReasonUnion
   /** Call duration, in seconds */
@@ -300,7 +317,7 @@ export interface MessageChatChangeTitle {
 export interface MessageChatChangePhoto {
   _: 'messageChatChangePhoto'
   /** New chat photo */
-  photo: Photo
+  photo: ChatPhoto
 }
 
 /** A deleted chat photo */
@@ -452,7 +469,18 @@ export interface MessagePassportDataReceived {
   credentials: EncryptedCredentials
 }
 
-/** Message content that is not supported by the client */
+/** A user in the chat came within proximity alert range */
+export interface MessageProximityAlertTriggered {
+  _: 'messageProximityAlertTriggered'
+  /** The user or chat, which triggered the proximity alert */
+  traveler: MessageSenderUnion
+  /** The user or chat, which subscribed for the proximity alert */
+  watcher: MessageSenderUnion
+  /** The distance between the users */
+  distance: number
+}
+
+/** Message content that is not supported in the current TDLib version */
 export interface MessageUnsupported {
   _: 'messageUnsupported'
 }

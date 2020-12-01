@@ -2,8 +2,8 @@ import {
   ChatLocation,
   ChatMemberStatusUnion,
   ChatPermissions,
-  Message,
-  Photo
+  ChatPhoto,
+  Message
 } from './index'
 
 /** Represents a chat event */
@@ -63,6 +63,8 @@ export interface ChatEventMessagePinned {
 /** A message was unpinned */
 export interface ChatEventMessageUnpinned {
   _: 'chatEventMessageUnpinned'
+  /** Unpinned message */
+  message: Message
 }
 
 /** A new member joined the chat */
@@ -152,9 +154,9 @@ export interface ChatEventUsernameChanged {
 export interface ChatEventPhotoChanged {
   _: 'chatEventPhotoChanged'
   /** Previous chat photo value; may be null */
-  oldPhoto?: Photo
+  oldPhoto?: ChatPhoto
   /** New chat photo value; may be null */
-  newPhoto?: Photo
+  newPhoto?: ChatPhoto
 }
 
 /** The can_invite_users permission of a supergroup chat was toggled */

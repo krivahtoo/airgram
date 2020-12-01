@@ -1,7 +1,9 @@
 import {
   MessageContentUnion,
   MessageForwardInfo,
+  MessageInteractionInfo,
   MessageSchedulingStateUnion,
+  MessageSenderUnion,
   MessageSendingStateUnion,
   ReplyMarkupUnion
 } from '@airgram/core'
@@ -10,14 +12,11 @@ import {
 export class MessageBaseModel {
   public _: 'message'
 
-  /** Message identifier, unique for the chat to which the message belongs */
+  /** Message identifier; unique for the chat to which the message belongs */
   public id: number
 
-  /**
-   * Identifier of the user who sent the message; 0 if unknown. Currently, it is unknown
-   * for channel posts and for channel posts automatically forwarded to discussion group
-   */
-  public senderUserId: number
+  /** The sender of the message */
+  public sender: MessageSenderUnion
 
   /** Chat identifier */
   public chatId: number
@@ -31,10 +30,13 @@ export class MessageBaseModel {
   /** True, if the message is outgoing */
   public isOutgoing: boolean
 
+  /** True, if the message is pinned */
+  public isPinned: boolean
+
   /**
    * True, if the message can be edited. For live location and poll messages this fields
    * shows whether editMessageLiveLocation or stopPoll can be used with this message by
-   * the client
+   * the application
    */
   public canBeEdited: boolean
 
@@ -49,6 +51,12 @@ export class MessageBaseModel {
 
   /** True, if the message can be deleted for all users */
   public canBeDeletedForAllUsers: boolean
+
+  /** True, if the message statistics are available */
+  public canGetStatistics: boolean
+
+  /** True, if the message thread info is available */
+  public canGetMessageThread: boolean
 
   /**
    * True, if the message is a channel post. All messages to channels are channel posts,
@@ -68,11 +76,26 @@ export class MessageBaseModel {
   /** Information about the initial message sender; may be null */
   public forwardInfo?: MessageForwardInfo
 
+  /** Information about interactions with the message; may be null */
+  public interactionInfo?: MessageInteractionInfo
+
+  /**
+   * If non-zero, the identifier of the chat to which the replied message belongs; Currently,
+   * only messages in the Replies chat can have different reply_in_chat_id and chat_id
+   */
+  public replyInChatId: number
+
   /**
    * If non-zero, the identifier of the message this message is replying to; can be the
    * identifier of a deleted message
    */
   public replyToMessageId: number
+
+  /**
+   * If non-zero, the identifier of the message thread the message belongs to; unique
+   * within the chat to which the message belongs
+   */
+  public messageThreadId: number
 
   /**
    * For self-destructing messages, the message's TTL (Time To Live), in seconds; 0 if
@@ -86,11 +109,8 @@ export class MessageBaseModel {
   /** If non-zero, the user identifier of the bot through which this message was sent */
   public viaBotUserId: number
 
-  /** For channel posts, optional author signature */
+  /** For channel posts and anonymous group messages, optional author signature */
   public authorSignature: string
-
-  /** Number of times this message was viewed */
-  public views: number
 
   /**
    * Unique identifier of an album this message belongs to. Only photos and videos can

@@ -2,7 +2,7 @@ import {
   ChatActionBarUnion,
   ChatNotificationSettings,
   ChatPermissions,
-  ChatPhoto,
+  ChatPhotoInfo,
   ChatPosition,
   ChatTypeUnion,
   DraftMessage,
@@ -21,7 +21,7 @@ export interface Chat {
   /** Chat title */
   title: string
   /** Chat photo; may be null */
-  photo?: ChatPhoto
+  photo?: ChatPhotoInfo
   /** Actions that non-administrator chat members are allowed to take in the chat */
   permissions: ChatPermissions
   /** Last message in the chat; may be null */
@@ -30,6 +30,11 @@ export interface Chat {
   positions: ChatPosition[]
   /** True, if the chat is marked as unread */
   isMarkedAsUnread: boolean
+  /**
+   * True, if the chat is blocked by the current user and private messages from the chat
+   * can't be received
+   */
+  isBlocked: boolean
   /** True, if the chat has scheduled messages */
   hasScheduledMessages: boolean
   /**
@@ -61,8 +66,6 @@ export interface Chat {
    * null
    */
   actionBar?: ChatActionBarUnion
-  /** Identifier of the pinned message in the chat; 0 if none */
-  pinnedMessageId: number
   /**
    * Identifier of the message from which reply markup needs to be used; 0 if there is
    * no default custom reply markup in the chat
@@ -71,9 +74,9 @@ export interface Chat {
   /** A draft of a message in the chat; may be null */
   draftMessage?: DraftMessage
   /**
-   * Contains client-specific data associated with the chat. (For example, the chat scroll
-   * position or local chat notification settings can be stored here.) Persistent if the
-   * message database is used
+   * Contains application-specific data associated with the chat. (For example, the chat
+   * scroll position or local chat notification settings can be stored here.) Persistent
+   * if the message database is used
    */
   clientData: string
 }
